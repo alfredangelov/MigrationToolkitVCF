@@ -1,7 +1,7 @@
 function Export-FolderTree {
     [CmdletBinding()]
     param (
-        [string]$ConfigPath = ".\migration.config.json",
+        [string]$ConfigPath = ".\shared\migration.config.json",
         [switch]$VerboseOutput
     )
 

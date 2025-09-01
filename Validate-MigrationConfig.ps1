@@ -2,9 +2,9 @@ Write-Host "`n🧪 MIGRATION CONFIG VALIDATION SCRIPT" -ForegroundColor Cyan
 Write-Host "──────────────────────────────────────────────"
 
 # STEP 1: Check for config file
-$configPath = ".\migration.config.json"
+$configPath = ".\shared\migration.config.json"
 if (-not (Test-Path $configPath)) {
-    Write-Host "`n❌ Missing migration.config.json. Please tailor your configuration file first." -ForegroundColor Red
+    Write-Host "`n❌ Missing shared\migration.config.json. Please tailor your configuration file first." -ForegroundColor Red
     return
 } else {
     Write-Host "`n📥 Found config file: $configPath"
@@ -15,7 +15,7 @@ try {
     $cfg = Get-Content $configPath | ConvertFrom-Json -Depth 10
     Write-Host "✅ Parsed JSON config successfully"
 } catch {
-    Write-Host "❌ Failed to parse migration.config.json" -ForegroundColor Red
+    Write-Host "❌ Failed to parse shared\migration.config.json" -ForegroundColor Red
     Write-Host "Ensure it uses valid JSON syntax"
     return
 }

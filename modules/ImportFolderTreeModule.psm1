@@ -1,7 +1,7 @@
 function Import-FolderTree {
     [CmdletBinding()]
     param (
-        [string]$ConfigPath = ".\migration.config.json",
+        [string]$ConfigPath = ".\shared\migration.config.json",
         [switch]$VerboseOutput
     )
 
@@ -82,8 +82,8 @@ function Import-FolderTree {
         RootFolder   = $tree.Name
     }
 
-    $summary | ConvertTo-Json -Depth 3 | Set-Content -Path "folder-import-summary.json"
-    Write-Host "`n📝 Import summary written to: folder-import-summary.json"
+    $summary | ConvertTo-Json -Depth 3 | Set-Content -Path "export\folder-import-summary.json"
+    Write-Host "`n📝 Import summary written to: export\folder-import-summary.json"
 
     Disconnect-VIServer -Confirm:$false | Out-Null
     $mode = if ($DryRun) { "DryRun" } else { "Live" }

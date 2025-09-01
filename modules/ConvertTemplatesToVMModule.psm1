@@ -1,7 +1,7 @@
 function Convert-TemplatesToVM {
     [CmdletBinding()]
     param (
-        [string]$ConfigPath = ".\migration.config.json",
+        [string]$ConfigPath = ".\shared\migration.config.json",
         [switch]$VerboseOutput
     )
 
@@ -45,7 +45,7 @@ function Convert-TemplatesToVM {
     Templates   = $templateList
     }
 
-    $templateSummary | ConvertTo-Json -Depth 4 | Set-Content -Path "template-list.json"
+    $templateSummary | ConvertTo-Json -Depth 4 | Set-Content -Path "export\template-list.json"
 
     if ($VerboseOutput) {
         Write-Host "`n📄 Template metadata written to: template-list.json"

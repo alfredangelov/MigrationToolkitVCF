@@ -1,7 +1,7 @@
 function Move-VMsToFolders {
     [CmdletBinding()]
     param (
-        [string]$ConfigPath = ".\migration.config.json",
+        [string]$ConfigPath = ".\shared\migration.config.json",
         [switch]$VerboseOutput
     )
 
@@ -85,9 +85,9 @@ function Move-VMsToFolders {
     CompletedAt   = Get-Date
     TargetServer  = $server
 }
-    $summary | ConvertTo-Json -Depth 4 | Set-Content -Path "vm-relocation-summary.json"
+    $summary | ConvertTo-Json -Depth 4 | Set-Content -Path "export\vm-relocation-summary.json"
 
-    Write-Host "`n📝 Relocation summary written to: vm-relocation-summary.json"
+    Write-Host "`n📝 Relocation summary written to: export\vm-relocation-summary.json"
 
     Disconnect-VIServer -Confirm:$false | Out-Null
     $mode = if ($DryRun) { "DryRun" } else { "Live" }

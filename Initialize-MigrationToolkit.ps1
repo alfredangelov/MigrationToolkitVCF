@@ -16,14 +16,14 @@ if ($PSVersionTable.PSVersion -lt $minPSVersion) {
 
 # Check required files
 $requiredFiles = @(
-    "ConvertTemplatesToVMModule.psm1",
-    "Export-FolderTreeModule.psm1",
-    "AuditFolderModule.psm1",
-    "DeltaCompareModule.psm1",
-    "ImportFolderTreeModule.psm1",
-    "MoveVMsModule.psm1",
-    "ConvertVMsToTemplateModule.psm1",
-    "migration.config.json"
+    "modules\ConvertTemplatesToVMModule.psm1",
+    "modules\Export-FolderTreeModule.psm1",
+    "modules\AuditFolderModule.psm1",
+    "modules\DeltaCompareModule.psm1",
+    "modules\ImportFolderTreeModule.psm1",
+    "modules\MoveVMsModule.psm1",
+    "modules\ConvertVMsToTemplateModule.psm1",
+    "shared\migration.config.json"
 )
 
 Write-Host "`n📂 Verifying toolkit files..."
@@ -85,4 +85,4 @@ Write-Host "`n🧾 Verifying stored secrets..."
 Get-SecretInfo | Where-Object { $_.Name -in @("SourceCred", "TargetCred") } | Format-Table Name, VaultName, LastAccessTime
 
 Write-Host "`n🎯 Toolkit environment ready."
-Write-Host "You're now set to tailor the migration.config.json confguration file." -ForegroundColor Green
+Write-Host "You're now set to tailor the shared\migration.config.json configuration file." -ForegroundColor Green

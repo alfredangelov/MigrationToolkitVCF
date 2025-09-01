@@ -1,8 +1,42 @@
-# Ignore actual config file with credentials
-migration.config.json
+# Public hygiene: keep sensitive/local artifacts out of the repo
 
-# Ignore any output files that are kept for validation or testing
-FullOutput.txt
+# Active configuration (contains environment-specific values)
+shared/migration.config.json
 
-# Ignore all JSON files
+# Attic (archived development artifacts)
+attic/*
+
+# Logs and debug files
+log/*
+*.log
+*.txt
+debug-*
+error-*
+
+# Data export files
+export/*
+*.csv
+*.xlsx
+*.xml
 *.json
+
+# Credential and secret files
+*.key
+*.pfx
+*.p12
+*.crt
+*.pem
+
+# Ignore cruft
+Thumbs.db
+.DS_Store
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*.ps1xml
+profile.ps1
+*.bak
+*.backup
+*~

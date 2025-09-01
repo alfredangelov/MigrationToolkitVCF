@@ -1,7 +1,11 @@
 function Convert-VMsToTemplates {
-    [CmdletBinding()]
-    param (
-        [string]$ConfigPath = ".\migration.config.json",
+    [CmdletBinding()        MissingVMs      = $missingVms
+        CompletedAt     = Get-Date
+    }
+    $summary | ConvertTo-Json -Depth 4 | Set-Content "export\template-restore-summary.json"
+
+    Write-Host "`n✅ Template restoration completed. Summary written to: export\template-restore-summary.json" param (
+        [string]$ConfigPath = ".\shared\migration.config.json",
         [switch]$VerboseOutput
     )
 

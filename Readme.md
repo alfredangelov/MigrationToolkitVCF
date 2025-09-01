@@ -29,17 +29,17 @@ A PowerShell toolkit for automating the migration of VM inventory and folder str
 
 3. **Prepare Your Migration Configuration**
 
-   Use the provided `migration.config.json.template` as a starting point for your configuration.  
-   Copy and rename it to `migration.config.json` and fill in your environment details:
+   Use the provided template in the `shared/` folder as a starting point for your configuration.  
+   Copy it to the shared directory and rename it to `migration.config.json`:
 
    ```powershell
-   Copy-Item .\migration.config.json.template .\migration.config.json
-   # Edit migration.config.json with your settings
+   Copy-Item .\shared\migration.config.json.template .\shared\migration.config.json
+   # Edit shared\migration.config.json with your settings
    ```
 
 4. **Validate Your Configuration**
 
-   Before running a migration, validate your `migration.config.json` for completeness and correctness:
+   Before running a migration, validate your `shared\migration.config.json` for completeness and correctness:
 
    ```powershell
    .\Validate-MigrationConfig.ps1
@@ -58,7 +58,34 @@ A PowerShell toolkit for automating the migration of VM inventory and folder str
 
 6. **Review Output**
 
-   - Migration and audit summaries are generated as JSON files (e.g., `export_metadata.json`, `migration-summary.json`).
+   - Migration and audit summaries are generated as JSON files in the `export/` folder (e.g., `export/export_metadata.json`, `export/migration-summary.json`).
+
+---
+
+## Project Structure
+
+```text
+MigrationToolkitVCF/
+├── modules/                     # PowerShell modules
+│   ├── AuditFolderModule.psm1
+│   ├── ConvertTemplatesToVMModule.psm1
+│   ├── ConvertVMsToTemplateModule.psm1
+│   ├── DeltaCompareModule.psm1
+│   ├── Export-FolderTreeModule.psm1
+│   ├── ImportFolderTreeModule.psm1
+│   └── MoveVMsModule.psm1
+├── shared/                      # Configuration templates and shared files
+│   ├── migration.config.json.template
+│   └── migration.config.json    # Your actual config (not in git)
+├── export/                      # All output artifacts and reports
+│   ├── export_metadata.json
+│   ├── folder-import-summary.json
+│   ├── migration-summary.json
+│   └── ...other output files
+├── Initialize-MigrationToolkit.ps1
+├── Run-Migration.ps1
+└── Validate-MigrationConfig.ps1
+```
 
 ---
 
@@ -76,11 +103,11 @@ A PowerShell toolkit for automating the migration of VM inventory and folder str
 - PowerShell 7.5 or later
 - VMware PowerCLI modules installed
 - Access to source and target vCenter environments
-- A `migration.config.json` file with credentials and environment details (not included in repo, use the template provided)
+- A `shared\migration.config.json` file with credentials and environment details (not included in repo, use the template provided)
 
 ## Example `migration.config.json`
 
-See `migration.config.json.template` in the repository for the latest example and required fields.
+See `shared/migration.config.json.template` in the repository for the latest example and required fields.
 
 ```json
 {
@@ -111,15 +138,17 @@ See `migration.config.json.template` in the repository for the latest example an
 ```
 
 > **Note:**  
-> Do not commit your `migration.config.json` or any sensitive JSON files. The `.gitignore` is configured to prevent this.
+> Do not commit your `shared\migration.config.json` or any sensitive JSON files. The `.gitignore` is configured to prevent this.
 
 ## Output Files
 
-- `export_metadata.json` — Audit and export metadata
-- `folder-import-summary.json` — Folder import results
-- `vm-relocation-summary.json` — VM relocation results
-- `template-restore-summary.json` — Template restoration results
-- `migration-summary.json` — Final migration summary
+All output files are now organized in the `export/` folder:
+
+- `export/export_metadata.json` — Audit and export metadata
+- `export/folder-import-summary.json` — Folder import results
+- `export/vm-relocation-summary.json` — VM relocation results
+- `export/template-restore-summary.json` — Template restoration results
+- `export/migration-summary.json` — Final migration summary
 
 ## Authors
 

@@ -19,7 +19,6 @@ export/*
 *.csv
 *.xlsx
 *.xml
-*.json
 
 # Credential and secret files
 *.key

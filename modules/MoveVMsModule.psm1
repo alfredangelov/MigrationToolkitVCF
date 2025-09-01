@@ -1,35 +1,30 @@
 function Move-VMsToFolders {
     [CmdletBinding()]
     param (
+        [ValidateScript({Test-Path $_ -PathType Leaf})]
         [string]$ConfigPath = ".\shared\migration.config.json",
         [switch]$VerboseOutput
     )
 
+    # Import configuration helper
+    Import-Module $PSScriptRoot\ConfigurationModule.psm1 -Force
+
     Write-Host "`n🚚 Starting VM relocation using config: $ConfigPath"
 
-    if (-not (Test-Path $ConfigPath)) {
-        Write-Error "❌ Config file not found: $ConfigPath"
+    try {
+        $config = Get-MigrationConfig -ConfigPath $ConfigPath
+        $server = $config.TargetVCenter.Server
+        $mappingPath = $config.Folders.VMMappingJson
+        $DryRun = $config.DryRun
+        $jsonDepth = $config.Folders.JsonDepth
+        $credential = Get-VCenterCredential -CredentialProfile $config.TargetVCenter.CredentialProfile -AllowPrompt
+        Write-Host "🔐 Retrieved credential from SecretVault"
+    } catch {
+        Write-Error "❌ Configuration error: $($_.Exception.Message)"
         return
     }
 
-    $config      = Get-Content $ConfigPath | ConvertFrom-Json
-    $server      = $config.TargetVCenter.Server
-    #$datacenter  = $config.TargetVCenter.Datacenter
-    $secretName  = $config.TargetVCenter.CredentialProfile
-    $mappingPath = $config.Folders.VMMappingJson
-    $DryRun      = $config.DryRun
-    $jsonDepth   = $config.Folders.JsonDepth
-
-    try {
-        Import-Module Microsoft.PowerShell.SecretManagement -ErrorAction SilentlyContinue
-        $Credential = Get-Secret -Name $secretName
-        Write-Host "🔐 Retrieved credential from SecretVault"
-    } catch {
-        Write-Warning "⚠️ Secret retrieval failed — prompting manually..."
-        $Credential = Get-Credential -Message "Enter vCenter credentials"
-    }
-
-    Connect-VIServer -Server $server -Credential $Credential -ErrorAction Stop | Out-Null
+    Connect-VIServer -Server $server -Credential $credential -ErrorAction Stop | Out-Null
 
     if (-not (Test-Path $mappingPath)) {
         Write-Error "❌ VM mapping file not found: $mappingPath"

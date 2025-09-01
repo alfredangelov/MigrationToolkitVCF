@@ -1,35 +1,31 @@
 function Import-FolderTree {
     [CmdletBinding()]
     param (
+        [ValidateScript({Test-Path $_ -PathType Leaf})]
         [string]$ConfigPath = ".\shared\migration.config.json",
         [switch]$VerboseOutput
     )
 
+    # Import configuration helper
+    Import-Module $PSScriptRoot\ConfigurationModule.psm1 -Force
+
     Write-Host "`n🔧 Importing folder tree using config: $ConfigPath"
 
-    if (-not (Test-Path $ConfigPath)) {
-        Write-Error "❌ Config file not found: $ConfigPath"
+    try {
+        $cfg = Get-MigrationConfig -ConfigPath $ConfigPath
+        $server = $cfg.TargetVCenter.Server
+        $datacenter = $cfg.TargetVCenter.Datacenter
+        $jsonPath = $cfg.Folders.OutputJson
+        $DryRun = $cfg.DryRun
+        $jsonDepth = $cfg.Folders.JsonDepth
+        $credential = Get-VCenterCredential -CredentialProfile $cfg.TargetVCenter.CredentialProfile -AllowPrompt
+        Write-Host "🔐 Retrieved target credential from SecretVault"
+    } catch {
+        Write-Error "❌ Configuration error: $($_.Exception.Message)"
         return
     }
 
-    $cfg        = Get-Content $ConfigPath | ConvertFrom-Json
-    $server     = $cfg.TargetVCenter.Server
-    $datacenter = $cfg.TargetVCenter.Datacenter
-    $secret     = $cfg.TargetVCenter.CredentialProfile
-    $jsonPath   = $cfg.Folders.OutputJson
-    $DryRun     = $cfg.DryRun
-    $jsonDepth  = $cfg.Folders.JsonDepth
-
-    try {
-        Import-Module Microsoft.PowerShell.SecretManagement -ErrorAction SilentlyContinue
-        $Credential = Get-Secret -Name $secret
-        Write-Host "🔐 Retrieved target credential from SecretVault"
-    } catch {
-        Write-Warning "⚠️ Secret retrieval failed — prompting manually..."
-        $Credential = Get-Credential -Message "Enter vCenter credentials"
-    }
-
-    Connect-VIServer -Server $server -Credential $Credential -ErrorAction Stop | Out-Null
+    Connect-VIServer -Server $server -Credential $credential -ErrorAction Stop | Out-Null
 
     if (-not (Test-Path $jsonPath)) {
         Write-Error "❌ Folder structure file not found: $jsonPath"

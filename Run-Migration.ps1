@@ -1,4 +1,5 @@
 # Refresh modules
+"ConfigurationModule",
 "ConvertTemplatesToVMModule",
 "Export-FolderTreeModule",
 "AuditFolderModule",
@@ -9,6 +10,7 @@
     Remove-Module $_ -ErrorAction SilentlyContinue
 }
 
+Import-Module .\modules\ConfigurationModule.psm1
 Import-Module .\modules\ConvertTemplatesToVMModule.psm1
 Import-Module .\modules\Export-FolderTreeModule.psm1
 Import-Module .\modules\AuditFolderModule.psm1

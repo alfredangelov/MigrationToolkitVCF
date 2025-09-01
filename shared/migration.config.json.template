@@ -1,25 +1,25 @@
 {
+  "$schema": "./config-schema.json",
   "DryRun": true,
   "SourceVCenter": {
-    "Server": "source.server.com",
+    "Server": "source.vcenter.local",
     "Datacenter": "SourceDC",
     "CredentialProfile": "SourceCred"
   },
   "TargetVCenter": {
-    "Server": "destination.server.com",
-    "Datacenter": "DestinationDC",
+    "Server": "target.vcenter.local", 
+    "Datacenter": "TargetDC",
     "CredentialProfile": "TargetCred"
   },
   "Folders": {
     "Root": "vm",
-    "OutputJson": "folder-structure.json",
-    "ReferenceJson": "reference-folder-tree.json",
-    "VMMappingJson": "folder-structure.json",
+    "OutputJson": "export/folder-structure.json",
+    "VMMappingJson": "export/folder-structure.json",
     "JsonDepth": 100
   },
   "Metadata": {
-    "Author": "Alfred Angelov",
-    "MigrationNote": "Migrating VM inventory and folder structures from Source to Destination using VCF-compatible layout"
+    "Author": "Your Name Here",
+    "MigrationNote": "Describe your migration purpose and scope here"
   },
-  "ToolkitVersion": "2025.07.24"
+  "ToolkitVersion": "2025.09.01"
 }

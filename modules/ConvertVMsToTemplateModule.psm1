@@ -1,31 +1,33 @@
 function Convert-VMsToTemplates {
-    [CmdletBinding()        MissingVMs      = $missingVms
-        CompletedAt     = Get-Date
-    }
-    $summary | ConvertTo-Json -Depth 4 | Set-Content "export\template-restore-summary.json"
-
-    Write-Host "`n✅ Template restoration completed. Summary written to: export\template-restore-summary.json" param (
+    [CmdletBinding()]
+    param (
+        [ValidateScript({Test-Path $_ -PathType Leaf})]
         [string]$ConfigPath = ".\shared\migration.config.json",
         [switch]$VerboseOutput
     )
 
-    $cfg = Get-Content $ConfigPath | ConvertFrom-Json
-    $server   = $cfg.TargetVCenter.Server
-    $datacenter = $cfg.TargetVCenter.Datacenter
-    $secret  = $cfg.TargetVCenter.CredentialProfile
-    $DryRun  = $cfg.DryRun
+    # Import configuration helper
+    Import-Module $PSScriptRoot\ConfigurationModule.psm1 -Force
 
-    if (-not (Test-Path "template-list.json")) {
-        Write-Error "❌ Missing template-list.json file"
+    try {
+        $cfg = Get-MigrationConfig -ConfigPath $ConfigPath
+        $server = $cfg.TargetVCenter.Server
+        $datacenter = $cfg.TargetVCenter.Datacenter
+        $DryRun = $cfg.DryRun
+        $credential = Get-VCenterCredential -CredentialProfile $cfg.TargetVCenter.CredentialProfile -AllowPrompt
+    } catch {
+        Write-Error "❌ Configuration error: $($_.Exception.Message)"
         return
     }
 
-    $templateMap = Get-Content "template-list.json" | ConvertFrom-Json
+    if (-not (Test-Path "export\template-list.json")) {
+        Write-Error "❌ Missing export\template-list.json file"
+        return
+    }
 
-    Import-Module Microsoft.PowerShell.SecretManagement -ErrorAction SilentlyContinue
-    $Credential = try { Get-Secret -Name $secret } catch { Get-Credential }
+    $templateMap = Get-Content "export\template-list.json" | ConvertFrom-Json
 
-    Connect-VIServer -Server $server -Credential $Credential -ErrorAction Stop | Out-Null
+    Connect-VIServer -Server $server -Credential $credential -ErrorAction Stop | Out-Null
 
     $templateCount = $templateMap.Keys.Count
     $restoredCount = 0
@@ -60,8 +62,7 @@ function Convert-VMsToTemplates {
         MissingVMs      = $missingVms
         CompletedAt     = Get-Date
     }
-    $summary | ConvertTo-Json -Depth 4 | Set-Content "template-restore-summary.json"
+    $summary | ConvertTo-Json -Depth 4 | Set-Content "export\template-restore-summary.json"
 
-    Write-Host "`n✅ Template restoration completed. Summary written to: template-restore-summary.json"
-
+    Write-Host "`n✅ Template restoration completed. Summary written to: export\template-restore-summary.json"
 }

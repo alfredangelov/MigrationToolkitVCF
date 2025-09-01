@@ -16,6 +16,7 @@ if ($PSVersionTable.PSVersion -lt $minPSVersion) {
 
 # Check required files
 $requiredFiles = @(
+    "modules\ConfigurationModule.psm1",
     "modules\ConvertTemplatesToVMModule.psm1",
     "modules\Export-FolderTreeModule.psm1",
     "modules\AuditFolderModule.psm1",

@@ -67,6 +67,7 @@ A PowerShell toolkit for automating the migration of VM inventory and folder str
 ```text
 MigrationToolkitVCF/
 ├── modules/                     # PowerShell modules
+│   ├── ConfigurationModule.psm1        # Centralized config & credential handling
 │   ├── AuditFolderModule.psm1
 │   ├── ConvertTemplatesToVMModule.psm1
 │   ├── ConvertVMsToTemplateModule.psm1
@@ -75,6 +76,7 @@ MigrationToolkitVCF/
 │   ├── ImportFolderTreeModule.psm1
 │   └── MoveVMsModule.psm1
 ├── shared/                      # Configuration templates and shared files
+│   ├── config-schema.json              # JSON schema for validation
 │   ├── migration.config.json.template
 │   └── migration.config.json    # Your actual config (not in git)
 ├── export/                      # All output artifacts and reports
@@ -91,12 +93,45 @@ MigrationToolkitVCF/
 
 ## Features
 
+- **Enhanced Configuration Management**: Centralized configuration with JSON schema validation
+- **Secure Credential Handling**: Uses PowerShell SecretManagement for credential storage
+- **Environment-Specific Configs**: Support for dev, staging, and production configurations
+- **Robust Error Handling**: Comprehensive validation and error reporting
 - Converts VM templates to VMs for migration
 - Exports and audits folder trees from source vCenter
 - Imports folder trees into target vCenter
 - Relocates VMs to correct folders
 - Converts migrated VMs back to templates
 - Generates detailed migration and audit summaries in JSON format
+
+## Configuration Features
+
+### JSON Schema Validation
+
+Your configuration file supports IntelliSense and validation in VS Code through the included JSON schema (`shared/config-schema.json`).
+
+### Environment-Specific Configurations
+
+You can maintain separate configuration files for different environments:
+
+```powershell
+# Development environment
+Copy-Item .\shared\migration.config.json.template .\shared\migration.config.dev.json
+
+# Production environment  
+Copy-Item .\shared\migration.config.json.template .\shared\migration.config.prod.json
+
+# Run with specific environment
+.\Run-Migration.ps1 -ConfigPath ".\shared\migration.config.dev.json"
+```
+
+### Centralized Configuration Module
+
+The `ConfigurationModule.psm1` provides:
+
+- `Get-MigrationConfig`: Robust configuration loading with validation
+- `Get-VCenterCredential`: Secure credential retrieval with fallback prompts
+- `Test-VCenterConnection`: Connection validation utilities
 
 ## Prerequisites
 
@@ -133,7 +168,7 @@ See `shared/migration.config.json.template` in the repository for the latest exa
     "Author": "Alfred Angelov",
     "MigrationNote": "Migrating VM inventory and folder structures from Source to Destination using VCF-compatible layout"
   },
-  "ToolkitVersion": "2025.07.24"
+  "ToolkitVersion": "2025.09.01"
 }
 ```
 

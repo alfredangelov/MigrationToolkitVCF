@@ -2,6 +2,7 @@
 
 # Active configuration (contains environment-specific values)
 shared/migration.config.json
+shared/migration.config.*.json
 
 # Attic (archived development artifacts)
 attic/*

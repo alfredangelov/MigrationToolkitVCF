@@ -1,20 +1,26 @@
 function Convert-TemplatesToVM {
     [CmdletBinding()]
     param (
+        [ValidateScript({Test-Path $_ -PathType Leaf})]
         [string]$ConfigPath = ".\shared\migration.config.json",
         [switch]$VerboseOutput
     )
 
-    $cfg = Get-Content $ConfigPath | ConvertFrom-Json
-    $server   = $cfg.SourceVCenter.Server
-    $datacenter = $cfg.SourceVCenter.Datacenter
-    $secret  = $cfg.SourceVCenter.CredentialProfile
-    $DryRun  = $cfg.DryRun
+    # Import configuration helper
+    Import-Module $PSScriptRoot\ConfigurationModule.psm1 -Force
 
-    Import-Module Microsoft.PowerShell.SecretManagement -ErrorAction SilentlyContinue
-    $Credential = try { Get-Secret -Name $secret } catch { Get-Credential }
+    try {
+        $cfg = Get-MigrationConfig -ConfigPath $ConfigPath
+        $server = $cfg.SourceVCenter.Server
+        $datacenter = $cfg.SourceVCenter.Datacenter
+        $DryRun = $cfg.DryRun
+        $credential = Get-VCenterCredential -CredentialProfile $cfg.SourceVCenter.CredentialProfile -AllowPrompt
+    } catch {
+        Write-Error "❌ Configuration error: $($_.Exception.Message)"
+        return
+    }
 
-    Connect-VIServer -Server $server -Credential $Credential -ErrorAction Stop | Out-Null
+    Connect-VIServer -Server $server -Credential $credential -ErrorAction Stop | Out-Null
 
     $templates = Get-Template
 

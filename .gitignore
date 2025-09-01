@@ -1,0 +1,8 @@
+# Ignore actual config file with credentials
+migration.config.json
+
+# Ignore any output files that are kept for validation or testing
+FullOutput.txt
+
+# Ignore all JSON files
+*.json
